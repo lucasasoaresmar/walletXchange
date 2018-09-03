@@ -70,7 +70,3 @@ export const DB = {
 		return parsedStorage
 	}
 }
-
-DB.loadStorage()
-console.log(DB.findUser({name:'Lucas'}))
-DB.addUser({name:'Alex', password:'123456'})

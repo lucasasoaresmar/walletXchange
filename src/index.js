@@ -4,5 +4,9 @@ import './index.css';
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 
+import { DB } from './DB/dataBase.js';
+
+DB.loadStorage()
+
 ReactDOM.render(<App />, document.getElementById('root'));
 registerServiceWorker();

@@ -1,33 +1,35 @@
 export const DB = {
 	storageName: 'DB',
-	users: {
-		1: {
-			id: 1,
-			name: 'Lucas',
-			password: '123',
-	 		real: 100000,
-	 		brita: 0,
-	 		bitcoin: 0
-		}
+	storage: {
+		users: {
+			1: {
+				id: 1,
+				name: 'Lucas',
+				password: '123',
+		 		real: 100000,
+		 		brita: 0,
+		 		bitcoin: 0
+			}
+		},
+		usersId: [1]
 	},
-	usersId: [1],
 	findUser: function(user) {
 		let userId;
 
-		const checkUser = this.usersId.some(savedUserId => {
+		const checkUser = this.storage.usersId.some(savedUserId => {
 			userId = savedUserId
-			return this.users[savedUserId].name === user.name
+			return this.storage.users[savedUserId].name === user.name
 		})
 
-		if (checkUser) return this.users[userId]
+		if (checkUser) return this.storage.users[userId]
 	},
 	addUser: function(newUser) {
 		if (this.findUser(newUser)) return { status: 400, data:'Usuário já cadastrado' }
 
-		const userId = this.usersId.length + 1;
+		const userId = this.storage.usersId.length + 1;
 		
-		this.users = {
-			...this.users, 
+		this.storage.users = {
+			...this.storage.users, 
 			[userId]: {
 				id: userId,
 				name: newUser.name,
@@ -38,10 +40,10 @@ export const DB = {
 			}
 		}
 
-		this.usersId = [...this.usersId, userId]
+		this.storage.usersId = [...this.storage.usersId, userId]
 		this.saveToStorage();
 		
-		return { status: 201, data: this.users[userId] }
+		return { status: 201, data: this.storage.users[userId] }
 	},
 	authUser: function(authUser) {
 		const savedUser = this.findUser(authUser)
@@ -53,7 +55,7 @@ export const DB = {
 			: { status: 401, data: 'Senha errada :(' }
 	},
 	saveToStorage: function() {
-		localStorage.setItem(this.storageName, JSON.stringify(this))
+		localStorage.setItem(this.storageName, JSON.stringify(this.storage))
 	},
 	loadStorage: function() {
 		const storage = localStorage.getItem(this.storageName)
@@ -64,9 +66,11 @@ export const DB = {
 		}
 		
 		const parsedStorage = JSON.parse(storage)
-		this.users = {...parsedStorage.users}
-		this.usersId = [...parsedStorage.usersId]
-
+		this.storage = { ...parsedStorage }
 		return parsedStorage
 	}
 }
+
+DB.loadStorage()
+console.log(DB.findUser({name:'Lucas'}))
+DB.addUser({name:'Alex', password:'123456'})

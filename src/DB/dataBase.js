@@ -1,5 +1,6 @@
 export const DB = {
 	storageName: 'DB',
+	storageType: window.localStorage,
 	storage: {
 		users: {
 			1: {
@@ -112,14 +113,14 @@ export const DB = {
 		return { status: 201, data: this.storage.exchanges[exchangeId] }
 	},
 	saveToStorage: function() {
-		localStorage.setItem(this.storageName, JSON.stringify(this.storage))
+		this.storageType.setItem(this.storageName, JSON.stringify(this.storage))
 	},
 	loadStorage: function() {
-		const storage = localStorage.getItem(this.storageName)
+		const storage = this.storageType.getItem(this.storageName)
 
 		if(!storage) {
 			this.saveToStorage()
-			return 'localStorage iniciado!'
+			return 'Não havia base salva. Agora tem!'
 		}
 		
 		const parsedStorage = JSON.parse(storage)

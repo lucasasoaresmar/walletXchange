@@ -16,6 +16,7 @@ export const DB = {
 		if (checkUser) return this.storage.users[userId]
 	},
 	addUser: function(newUser) {
+		if (!newUser.password || !newUser.name) return { status: 400, data:'Estão faltando dados' }
 		if (this.findUser(newUser)) return { status: 400, data:'Usuário já cadastrado' }
 
 		const userId = this.storage.usersId.length + 1;

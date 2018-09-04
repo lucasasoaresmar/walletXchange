@@ -58,7 +58,7 @@ export const DB = {
 		return { status: 200, data: exchanges }
 	},
 	addExchange: function(exchange) {
-		const user = this.findUser(this.storage.users[exchange.userId]);
+		const user = this.storage.users[exchange.userId];
 
 		if (!user) return {status: 404, data: 'Usuário não encontrado'}
 
@@ -67,7 +67,7 @@ export const DB = {
 		this.storage.exchanges = {
 			...this.storage.exchanges,
 			[exchangeId]: {
-				id: exchange.exchangeId,
+				id: exchangeId,
 				userId: exchange.userId,
 				date: exchange.date,
 				from: exchange.from,

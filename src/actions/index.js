@@ -55,9 +55,9 @@ const toggleMoneyRequest = () => ({
 	type: types.TOGGLE_MONEY_REQUEST
 })
 
-const receiveMyMoney = (exchange) => ({
+const receiveMyMoney = (money) => ({
 	type: types.RECEIVE_MY_MONEY,
-	exchange
+	money
 })
 
 const moneyFailure = (message) => ({
@@ -89,7 +89,8 @@ export const makeExchange = exchange => async (dispatch, getState) => {
 		}
 		
 		DB.makeExchange(newMoney, exchange)
-		dispatch(receiveMyMoney(exchange))
+		dispatch(receiveMyMoney(newMoney))
+		dispatch(receiveExchanges(exchange))
 	}
 	
 	dispatch(toggleMoneyRequest())

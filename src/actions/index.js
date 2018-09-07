@@ -75,10 +75,14 @@ export const makeExchange = exchange => async (dispatch, getState) => {
 	if (fromThisMoney < exchange.amount) { 
 		dispatch(moneyFailure('Você não é tão rico assim'))
 		dispatch(toggleMoneyRequest())
-		return null
+		return
 	}
 
-	const exchanged = await changeMyMoneyService(exchange.from, exchange.to, exchange.amount, new Date())
+	const exchanged = await changeMyMoneyService(
+		exchange.from, 
+		exchange.to, 
+		exchange.amount, 
+		new Date())
 
 	if (!exchanged) dispatch(moneyFailure('Houve um erro na busca'))
 	if (exchanged) {
@@ -87,7 +91,7 @@ export const makeExchange = exchange => async (dispatch, getState) => {
 			[exchange.from]: fromThisMoney - exchange.amount,
 			[exchange.to]: toThisMoney + exchanged.money
 		}
-		
+
 		DB.makeExchange(newMoney, exchange)
 		dispatch(receiveMyMoney(newMoney))
 		dispatch(receiveExchanges(exchange))

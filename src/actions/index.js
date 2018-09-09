@@ -1,6 +1,6 @@
 import * as types from '../constants/ActionTypes'
-import { DB } from '../DB/database'
-import changeMyMoneyService from '../servicers/changeMyMoney'
+import { DB } from '../DB/dataBase'
+import { changeMyMoneyService } from '../services/changeMyMoney'
 
 const toggleUserRequest = () => ({
 	type: types.TOGGLE_USER_REQUEST

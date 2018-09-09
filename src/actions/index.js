@@ -46,7 +46,7 @@ export const login = user => async dispatch => {
 	if (user_.status === 200 ) {
 		const userData = user_.data
 		dispatch(receiveUser(userData))
-		dispatch(receiveExchanges(exchanges))
+		dispatch(receiveExchanges(exchanges.data))
 	}
 
 	dispatch(toggleUserRequest())

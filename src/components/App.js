@@ -7,7 +7,7 @@ import {
 } from "react-router-dom"
 import Login from '../containers/Login.container'
 import Home from './Home'
-import Exchanges from './Exchanges'
+import Exchanges from '../containers/Exchanges.container'
 import PrivateRoute from '../containers/PrivateRoute.container'
 
 class App extends Component {

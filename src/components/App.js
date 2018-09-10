@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import {
   BrowserRouter as Router,
   Route,
-  Link,
   Switch
 } from "react-router-dom"
 import Login from '../containers/Login.container'
@@ -15,20 +14,6 @@ class App extends Component {
     return (
       <Router>
         <div>
-          <ul>
-            <li>
-              <Link to="/">Login</Link>
-            </li>
-            <li>
-              <Link to="/home">Home</Link>
-            </li>
-            <li>
-              <Link to="/exchanges">Exchanges</Link>
-            </li>
-          </ul>
-
-          <hr/>
-
           <Switch>
             <Route exact path="/" component={Login}/>
             <PrivateRoute path="/home" component={Home}/>

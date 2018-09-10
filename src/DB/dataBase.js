@@ -57,7 +57,7 @@ export const DB = {
 
 		return { status: 200, data: exchanges }
 	},
-	addExchange: function(exchange) {
+	addExchange: function(newMoney, exchange) {
 		const user = this.storage.users[exchange.userId];
 
 		if (!user) return {status: 404, data: 'Usuário não encontrado'}
@@ -72,12 +72,20 @@ export const DB = {
 				date: exchange.date,
 				from: exchange.from,
 				to: exchange.to,
-				amount: exchange.amount,
-				conversion: exchange.conversion
+				amount: exchange.amount
+			}
+		}
+
+		this.storage.users = {
+			...this.storage.users,
+			[user.id]: {
+				...user,
+				...newMoney
 			}
 		}
 
 		this.storage.exchangesId = [...this.storage.exchangesId, exchangeId]
+		
 		this.saveToStorage()
 
 		return { status: 201, data: this.storage.exchanges[exchangeId] }

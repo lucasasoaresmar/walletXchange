@@ -2,9 +2,10 @@ import { connect } from 'react-redux'
 import Login from '../components/Login'
 import { login, signup } from '../actions/index.js'
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state, ownProps) => ({
 	active: state.user.name !== undefined,
-  failure: state.user.userFailure
+  failure: state.user.userFailure,
+  classes: ownProps.classes
 })
 
 const mapDispatchToProps = (dispatch) => ({

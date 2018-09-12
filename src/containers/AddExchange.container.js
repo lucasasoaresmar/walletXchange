@@ -2,8 +2,10 @@ import { connect } from 'react-redux'
 import AddExchange from '../components/AddExchange'
 import { makeExchange } from '../actions/index.js'
 
-const mapStateToProps = (state) => ({
-	userId: state.user.id
+const mapStateToProps = (state, ownProps) => ({
+	userId: state.user.id,
+	failure: state.user.moneyFailure,
+	classes: ownProps.classes
 })
 
 const mapDispatchToProps = (dispatch) => ({

@@ -14,18 +14,18 @@ import withRoot from '../withRoot'
 
 const styles = theme => ({
   root: {
-    textAlign: 'center',
     paddingTop: theme.spacing.unit * 15,
     ...theme.background,
+    height: '100vh'
   },
   formControl: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing.unit
   },
   container: {
-    ...theme.container,
+    ...theme.container
   },
   button: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing.unit
   },
 })
 

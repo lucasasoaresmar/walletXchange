@@ -134,4 +134,11 @@ class AddExchange extends Component {
   }
 }
 
+AddExchange.propTypes = {
+  userId: PropTypes.number.isRequired,
+  makeExchange: PropTypes.func.isRequired,
+  failure: PropTypes.string,
+  classes: PropTypes.object.isRequired,
+}
+
 export default withRoot(withStyles(styles)(AddExchange))

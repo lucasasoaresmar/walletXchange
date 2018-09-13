@@ -88,7 +88,7 @@ export const DB = {
 		
 		this.saveToStorage()
 
-		return { status: 201, data: this.storage.exchanges[exchangeId] }
+		return { status: 201, data: [this.storage.exchanges[exchangeId]] }
 	},
 	saveToStorage: function() {
 		this.storageType.setItem(this.storageName, JSON.stringify(this.storage))

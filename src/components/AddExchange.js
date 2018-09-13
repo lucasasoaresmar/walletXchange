@@ -58,7 +58,7 @@ class AddExchange extends Component {
   		<FormControl
         component="form" 
         onSubmit={this.handleExchange} 
-        className={[classes.formControl, classes.container]} 
+        className={classes.container} 
         noValidate
         autoComplete="off"
       >

@@ -89,15 +89,13 @@ export const makeExchange = exchange => async (dispatch, getState) => {
 			[exchange.from]: fromThisMoney - exchange.amount,
 			[exchange.to]: toThisMoney + exchanged
 		}
-		console.log(toThisMoney, exchanged)
 
-		DB.addExchange(newMoney, exchange)
+		const newExchange = DB.addExchange(newMoney, exchange)
 		dispatch(receiveMyMoney(newMoney))
-		dispatch(receiveExchanges(exchange))
+		dispatch(receiveExchanges(newExchange.data))
 
 	} catch (err) {
 		dispatch(moneyFailure(err.message))
-		console.log(err)
 	}
 
 	dispatch(toggleMoneyRequest())

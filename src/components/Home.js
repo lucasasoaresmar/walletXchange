@@ -1,4 +1,5 @@
 import React from 'react'
+import MyAppBar from '../containers/MyAppBar.container'
 import Exchanges from '../containers/Exchanges.container'
 import MoneyPanel from '../containers/MoneyPanel.container'
 import AddExchange from '../containers/AddExchange.container'
@@ -8,7 +9,7 @@ import withRoot from '../withRoot'
 const styles = theme => ({
   root: {
     textAlign: 'center',
-    paddingTop: theme.spacing.unit * 7,
+    paddingTop: theme.spacing.unit * 8,
     ...theme.background,
     minHeight: '100vh'
   },
@@ -26,6 +27,7 @@ const Home = ({classes}) => {
 	return (
 	  <div className={classes.root}>
 	    <div>
+        <MyAppBar/>
 		    <MoneyPanel/>
 		    <AddExchange/>
         <Exchanges/>

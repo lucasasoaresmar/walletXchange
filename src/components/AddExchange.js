@@ -8,6 +8,7 @@ import Button from '@material-ui/core/Button'
 import Chip from '@material-ui/core/Chip'
 import { withStyles } from '@material-ui/core/styles'
 import withRoot from '../withRoot'
+import moment from 'moment'
 
 const styles = theme => ({
   formControl: {
@@ -44,7 +45,7 @@ class AddExchange extends Component {
 			from: fromCurrency, 
 			to: toCurrency, 
 			amount: Number(amount),
-			date: new Date(),
+			date: moment(new Date()).format('DD/MM/YYYY'),
 			userId
 		}
 

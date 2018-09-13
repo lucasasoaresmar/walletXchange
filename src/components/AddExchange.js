@@ -72,7 +72,7 @@ class AddExchange extends Component {
 	            shrink: true,
 	          }}
 	          SelectProps={{
-            native: true,
+            native: 'true',
           	}}
 	          margin="normal"
 	        />
@@ -81,7 +81,7 @@ class AddExchange extends Component {
         <FormControl className={classes.formControl}>
           <InputLabel htmlFor="fromCurrency">Dessa moeda</InputLabel>
           <NativeSelect
-            native
+            native='true'
             value={this.state.fromCurrency}
             onChange={this.handleChange('fromCurrency')}
             inputProps={{
@@ -98,7 +98,7 @@ class AddExchange extends Component {
         <FormControl className={classes.formControl}>
           <InputLabel htmlFor="toCurrency">Para essa moeda</InputLabel>
           <NativeSelect
-            native
+            native='true'
             value={this.state.toCurrency}
             onChange={this.handleChange('toCurrency')}
             inputProps={{

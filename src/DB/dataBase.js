@@ -76,12 +76,13 @@ export const DB = {
 			}
 		}
 
-		this.storage.users = {
-			...this.storage.users,
-			[user.id]: {
-				...user,
-				...newMoney
-			}
+		this.storage.users[user.id] = {
+			...this.storage.users[user.id],
+			...newMoney,
+			exchanges: [
+				...this.storage.users[user.id].exchanges,
+				exchangeId
+			]
 		}
 
 		this.storage.exchangesId = [...this.storage.exchangesId, exchangeId]

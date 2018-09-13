@@ -33,7 +33,7 @@ const theme = createMuiTheme({
     maxWidth: '60vw',
     minWidth: '250px',
     display: 'flex',
-    margin: 'auto'
+    margin: '10px auto'
   },
 });
 

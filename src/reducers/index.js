@@ -62,6 +62,8 @@ const exchanges = (state = [], action) => {
 				...state,
 				...action.exchanges
 			]
+		case USER_LOGOUT:
+			return []
 		default:
 			return state
 	}

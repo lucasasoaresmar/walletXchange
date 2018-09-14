@@ -79,7 +79,7 @@ class Login extends Component {
         <FormControl
           component="form" 
           onSubmit={this.handleLogin} 
-          className={[classes.formControl, classes.container]} 
+          className={classes.container} 
           noValidate
           autoComplete="off"
         >

@@ -35,7 +35,7 @@ const getCurrencies = (currency) => {
   switch (currency) {
     case 'real':
       return ['R$', 'reais']
-    case 'bitcoins':
+    case 'bitcoin':
       return ['B$', 'bitcoins']
     case 'brita':
       return ['$', 'britas']

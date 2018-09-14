@@ -9,7 +9,7 @@ import withRoot from '../withRoot'
 const styles = theme => ({
   root: {
     textAlign: 'center',
-    paddingTop: theme.spacing.unit * 8,
+    paddingTop: theme.spacing.unit * 10,
     ...theme.background,
     minHeight: '100vh'
   },

@@ -1,5 +1,6 @@
 import moment from 'moment'
 import axios from 'axios'
+import { newError } from '../utils/error'
 
 export const todayFormatMMDDYYYY = () => moment(new Date()).format('MM-DD-YYYY')
 
@@ -19,14 +20,8 @@ export const fetchIt = async (url) => {
 		const res = await axios.get(url)
 
 		if (res.status === 200) return res.data
-		else {
-			throw new Error ({
-				name: 'Nada bem',
-				message: 'Houve um erro ao buscar as correções das moedas'
-			})
-		}
 	} catch (err) {
-		throw new Error ({
+		throw new newError({
 			name: 'Nada bem',
 			message: 'Houve um erro ao buscar as correções das moedas'
 		})
@@ -43,20 +38,19 @@ export const getCurrencyValue = async (currency) => {
 				sell: Number(res.value[0].cotacaoVenda)
 			}
 		} catch(err) {
-			throw new Error(err)
+			throw err
 		}
 	}
 
 	if (currency === 'bitcoin') {
 		try {
 			const res = await fetchIt(lastBitcoinValueUrl)
-			console.log(res)
 			return {
 				buy: Number(res.ticker.buy),
 				sell: Number(res.ticker.sell)
 			}
 		} catch(err) {
-			throw new Error(err)
+			throw err
 		}
 	}
 
@@ -68,7 +62,7 @@ export const getCurrencyValue = async (currency) => {
 	}
 
 	else {
-		throw new Error({
+		throw new newError({
 			name: "Isso no ecxiste!",
 			message: "Essa moeda não é suportada"
 		})
@@ -81,6 +75,6 @@ export const changeMyMoneyService = async (fromThisCurrency, toThisCurrency, amo
 		const toThisCurrencyValue = await getCurrencyValue(toThisCurrency)
 		return fromThisCurrencyValue.sell * amount * toThisCurrencyValue.buy
 	} catch(err) {
-		throw new Error(err)
+		throw err
 	}
 }

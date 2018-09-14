@@ -1,21 +1,31 @@
-export const todayFormatMMDDYYYY = () => new Date().toLocaleDateString("en-US").replace(/[/]/g,'-')
+import moment from 'moment'
+import axios from 'axios'
+
+export const todayFormatMMDDYYYY = () => moment(new Date()).format('MM-DD-YYYY')
 
 export const lastBritaValueURL = () => {
-	const today = todayFormatMMDDYYYY()
+	//const today = todayFormatMMDDYYYY()
 
-	return	process.env.REACT_APP_BRITA_URL_BEGIN
+	/*return process.env.REACT_APP_BRITA_URL_BEGIN
 	+ today
-	+ process.env.REACT_APP_BRITA_URL_FINISH
+	+ process.env.REACT_APP_BRITA_URL_FINISH*/
+	return "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@moeda,dataCotacao=@dataCotacao)?@moeda=%27USD%27&@dataCotacao=%2709-06-2018%27&$top=1&$orderby=dataHoraCotacao%20desc&$format=json&$select=cotacaoCompra,cotacaoVenda,dataHoraCotacao"
 }
 
 const lastBitcoinValueUrl = process.env.REACT_APP_BITCOIN_URL
 
 export const fetchIt = async (url) => {
-	const res = await fetch(url)
-	const resToJson  = await res.json()
+	try {
+		const res = await axios.get(url)
 
-	if (res.status === 200) return resToJson.value
-	else {
+		if (res.status === 200) return res.data
+		else {
+			throw new Error ({
+				name: 'Nada bem',
+				message: 'Houve um erro ao buscar as correções das moedas'
+			})
+		}
+	} catch (err) {
 		throw new Error ({
 			name: 'Nada bem',
 			message: 'Houve um erro ao buscar as correções das moedas'
@@ -27,10 +37,10 @@ export const getCurrencyValue = async (currency) => {
 	if (currency === 'brita') {
 		try {
 			const lastBritaTodayURL = lastBritaValueURL()
-			const value = await fetchIt(lastBritaTodayURL)
+			const res = await fetchIt(lastBritaTodayURL)
 			return {
-				buy: Number(value[0].cotacaoCompra),
-				sell: Number(value[0].cotacaoVenda)
+				buy: Number(res.value[0].cotacaoCompra),
+				sell: Number(res.value[0].cotacaoVenda)
 			}
 		} catch(err) {
 			throw new Error(err)
@@ -39,10 +49,11 @@ export const getCurrencyValue = async (currency) => {
 
 	if (currency === 'bitcoin') {
 		try {
-			const value = await fetchIt(lastBitcoinValueUrl)
+			const res = await fetchIt(lastBitcoinValueUrl)
+			console.log(res)
 			return {
-				buy: Number(value.buy),
-				sell: Number(value.sell)
+				buy: Number(res.ticker.buy),
+				sell: Number(res.ticker.sell)
 			}
 		} catch(err) {
 			throw new Error(err)

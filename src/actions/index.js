@@ -1,6 +1,6 @@
 import * as types from '../constants/ActionTypes'
-import { DB } from '../DB/database'
-import changeMyMoneyService from '../servicers/changeMyMoney'
+import { DB } from '../DB/dataBase'
+import { changeMyMoneyService } from '../services/changeMyMoney'
 
 const toggleUserRequest = () => ({
 	type: types.TOGGLE_USER_REQUEST
@@ -46,7 +46,7 @@ export const login = user => async dispatch => {
 	if (user_.status === 200 ) {
 		const userData = user_.data
 		dispatch(receiveUser(userData))
-		dispatch(receiveExchanges(exchanges))
+		dispatch(receiveExchanges(exchanges.data))
 	}
 
 	dispatch(toggleUserRequest())
@@ -70,8 +70,8 @@ export const makeExchange = exchange => async (dispatch, getState) => {
 	dispatch(toggleMoneyRequest())
 	
 	const state = getState()
-	const fromThisMoney = state[exchange.from]
-	const toThisMoney = state[exchange.to]
+	const fromThisMoney = state.user[exchange.from]
+	const toThisMoney = state.user[exchange.to]
 
 	if (fromThisMoney < exchange.amount) { 
 		dispatch(moneyFailure('Você não é tão rico assim'))
@@ -79,24 +79,24 @@ export const makeExchange = exchange => async (dispatch, getState) => {
 		return
 	}
 
-	const exchanged = await changeMyMoneyService(
-		exchange.from, 
-		exchange.to, 
-		exchange.amount, 
-		new Date())
-
-	if (!exchanged) dispatch(moneyFailure('Houve um erro na busca'))
-	if (exchanged) {
+	try {
+		let exchanged = await changeMyMoneyService(
+			exchange.from, 
+			exchange.to, 
+			exchange.amount)
 
 		const newMoney = {
 			[exchange.from]: fromThisMoney - exchange.amount,
-			[exchange.to]: toThisMoney + exchanged.money
+			[exchange.to]: toThisMoney + exchanged
 		}
 
-		DB.makeExchange(newMoney, exchange)
+		const newExchange = DB.addExchange(newMoney, exchange)
 		dispatch(receiveMyMoney(newMoney))
-		dispatch(receiveExchanges(exchange))
+		dispatch(receiveExchanges(newExchange.data))
+
+	} catch (err) {
+		dispatch(moneyFailure(err.message))
 	}
-	
+
 	dispatch(toggleMoneyRequest())
 }

@@ -2,36 +2,24 @@ import React, { Component } from 'react'
 import {
   BrowserRouter as Router,
   Route,
-  Link,
-  //Redirect,
-  // withRouter
+  Switch
 } from "react-router-dom"
-import Login from './Login'
+import Login from '../containers/Login.container'
 import Home from './Home'
-import Exchanges from './Exchanges'
+import Exchanges from '../containers/Exchanges.container'
+import PrivateRoute from '../containers/PrivateRoute.container'
 
 class App extends Component {
   render() {
     return (
       <Router>
         <div>
-          <ul>
-            <li>
-              <Link to="/">Login</Link>
-            </li>
-            <li>
-              <Link to="/home">Home</Link>
-            </li>
-            <li>
-              <Link to="/exchanges">Exchanges</Link>
-            </li>
-          </ul>
-
-          <hr/>
-
-          <Route exact path="/" component={Login}/>
-          <Route path="/home" component={Home}/>
-          <Route path="/exchanges" component={Exchanges}/>
+          <Switch>
+            <Route exact path="/" component={Login}/>
+            <PrivateRoute path="/home" component={Home}/>
+            <PrivateRoute path="/exchanges" component={Exchanges}/>
+            <Route render={ () => <h1>404 Error</h1> } />
+          </Switch>
         </div>
       </Router>
     )

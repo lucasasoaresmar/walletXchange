@@ -2,40 +2,53 @@ import moment from 'moment'
 import axios from 'axios'
 import { newError } from '../utils/error'
 
-export const todayFormatMMDDYYYY = () => moment(new Date()).format('MM-DD-YYYY')
+export const interval = (days = 3, today = moment()) => ({
+	initialDate: today.subtract(days, 'days').format('MM-DD-YYYY'),
+	finalDate: today.format('MM-DD-YYYY')
+})
 
-export const lastBritaValueURL = () => {
-	//const today = todayFormatMMDDYYYY()
+export const getBrita = (date = interval()) => ({
+	method: 'get',
+	url: process.env.REACT_APP_BRITA_URL,
+	params: {
+		'@moeda': "'USD'",
+		'@dataInicial': `'${date.initialDate}'`,
+		'@dataFinalCotacao': `'${date.finalDate}'`,
+		'$format':'json',
+		'$select': 'cotacaoCompra,cotacaoVenda,dataHoraCotacao'
+	}
+})
 
-	/*return process.env.REACT_APP_BRITA_URL_BEGIN
-	+ today
-	+ process.env.REACT_APP_BRITA_URL_FINISH*/
-	return "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@moeda,dataCotacao=@dataCotacao)?@moeda=%27USD%27&@dataCotacao=%2709-06-2018%27&$top=1&$orderby=dataHoraCotacao%20desc&$format=json&$select=cotacaoCompra,cotacaoVenda,dataHoraCotacao"
+const getBitcoin = {
+	method: 'get',
+	url: process.env.REACT_APP_BITCOIN_URL
 }
 
-const lastBitcoinValueUrl = process.env.REACT_APP_BITCOIN_URL
-
-export const fetchIt = async (url) => {
+export const fetchIt = async (request) => {
 	try {
-		const res = await axios.get(url)
+		const res = await axios(request)
 
 		if (res.status === 200) return res.data
+		else throw new Error(newError())
 	} catch (err) {
-		throw new newError({
-			name: 'Nada bem',
-			message: 'Houve um erro ao buscar as correções das moedas'
-		})
+		throw new Error(
+			newError({
+				name: 'Nada bem',
+				message: 'Houve um erro ao buscar as correções das moedas'
+			})
+		)
 	}
 }
 
 export const getCurrencyValue = async (currency) => {
 	if (currency === 'brita') {
 		try {
-			const lastBritaTodayURL = lastBritaValueURL()
-			const res = await fetchIt(lastBritaTodayURL)
+			const res = await fetchIt(getBrita())
+			const data = res.value[res.value.length - 1]
+
 			return {
-				buy: Number(res.value[0].cotacaoCompra),
-				sell: Number(res.value[0].cotacaoVenda)
+				buy: Number(data.cotacaoCompra),
+				sell: Number(data.cotacaoVenda)
 			}
 		} catch(err) {
 			throw err
@@ -44,7 +57,7 @@ export const getCurrencyValue = async (currency) => {
 
 	if (currency === 'bitcoin') {
 		try {
-			const res = await fetchIt(lastBitcoinValueUrl)
+			const res = await fetchIt(getBitcoin)
 			return {
 				buy: Number(res.ticker.buy),
 				sell: Number(res.ticker.sell)

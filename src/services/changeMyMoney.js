@@ -3,8 +3,8 @@ import axios from 'axios'
 import { newError } from '../utils/error'
 
 export const interval = (days = 3, today = moment()) => ({
-	initialDate: today.subtract(days, 'days').format('MM-DD-YYYY'),
-	finalDate: today.format('MM-DD-YYYY')
+	finalDate: today.format('MM-DD-YYYY'),
+	initialDate: today.subtract(days, 'days').format('MM-DD-YYYY')
 })
 
 export const getBrita = (date = interval()) => ({
@@ -24,26 +24,24 @@ const getBitcoin = {
 	url: process.env.REACT_APP_BITCOIN_URL
 }
 
-export const fetchIt = async (request) => {
+export const fetchIt = async (request, fetchFunc = axios) => {
 	try {
-		const res = await axios(request)
+		const res = await fetchFunc(request)
 
 		if (res.status === 200) return res.data
-		else throw new Error(newError())
+		else throw newError()
 	} catch (err) {
-		throw new Error(
-			newError({
-				name: 'Nada bem',
-				message: 'Houve um erro ao buscar as correções das moedas'
-			})
-		)
+		throw newError({
+			name: 'Nada bem',
+			message: 'Houve um erro ao buscar as correções das moedas'
+		})
 	}
 }
 
-export const getCurrencyValue = async (currency) => {
+export const getCurrencyValue = async (currency, fetchFunc = fetchIt) => {
 	if (currency === 'brita') {
 		try {
-			const res = await fetchIt(getBrita())
+			const res = await fetchFunc(getBrita())
 			const data = res.value[res.value.length - 1]
 
 			return {
@@ -57,7 +55,7 @@ export const getCurrencyValue = async (currency) => {
 
 	if (currency === 'bitcoin') {
 		try {
-			const res = await fetchIt(getBitcoin)
+			const res = await fetchFunc(getBitcoin)
 			return {
 				buy: Number(res.ticker.buy),
 				sell: Number(res.ticker.sell)
@@ -75,17 +73,33 @@ export const getCurrencyValue = async (currency) => {
 	}
 
 	else {
-		throw new newError({
+		throw newError({
 			name: "Isso no ecxiste!",
 			message: "Essa moeda não é suportada"
 		})
 	}
 }
 
-export const changeMyMoneyService = async (fromThisCurrency, toThisCurrency, amount) => {
+export const changeMyMoneyService = async (
+	fromThisCurrency,
+	toThisCurrency,
+	amount,
+	getCurrencyValueFunc = getCurrencyValue
+	) => {
 	try {
-		const fromThisCurrencyValue = await getCurrencyValue(fromThisCurrency)
-		const toThisCurrencyValue = await getCurrencyValue(toThisCurrency)
+		if (fromThisCurrency === toThisCurrency) throw newError({
+			name: "Mesma moeda!",
+			message: "Não é possível trocar para a mesma moeda"
+		})
+
+		if (amount === 0) throw newError({
+			name: "Mão de vaca",
+			message: "Não é possível trocar 0 dinheiros"
+		})
+
+		const fromThisCurrencyValue = await getCurrencyValueFunc(fromThisCurrency)
+		const toThisCurrencyValue = await getCurrencyValueFunc(toThisCurrency)
+		
 		return fromThisCurrencyValue.sell * amount * toThisCurrencyValue.buy
 	} catch(err) {
 		throw err

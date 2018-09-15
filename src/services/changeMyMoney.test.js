@@ -1,90 +1,147 @@
 import * as money from './changeMyMoney'
+import moment from 'moment'
 
-const mockFetch = (status, value) => {
-  return jest.fn().mockImplementation(() =>
-    Promise.resolve({
-      status,
-      json: function(){ return { value }}
-    })
-  );
+const mockedPromise = (response) => (...request) => Promise.resolve({ 
+		...response
+	})
+
+const goodBritaRequest = {
+	status: 200,
+	data: {
+		value: [{
+			'cotacaoCompra': '2',
+			'cotacaoVenda': '3'
+		}]
+	}
 }
-
-const goodBritaRequest = [{
-	'cotacaoCompra': '2',
-	'cotacaoVenda': '3'
-}]
 
 const goodBitcoinRequest = {
-	'buy': '2',
-	'sell': '3'
+	status: 200,
+	data: {
+		ticker: {
+			'buy': '2',
+			'sell': '3'
+		}
+	}
 }
 
-it('Get Bitcoin URL', () => {
-	expect(money.lastBritaValueURL()).toEqual(
-		process.env.REACT_APP_BRITA_URL_BEGIN
-	+ money.todayFormatMMDDYYYY()
-	+ process.env.REACT_APP_BRITA_URL_FINISH)
+const badBitcoinRequest = {
+	status: 400,
+	data: {
+		ticker: {
+			'buy': '2',
+			'sell': '3'
+		}
+	}
+}
+
+it('Get initial and final days of request', () => {
+	expect(money.interval(3, moment('2018-01-04'))).toEqual({
+		initialDate: '01-01-2018',
+		finalDate: '01-04-2018'
+	})
 })
 
 it('Get fetch response to be ok', async () => {
-	global.fetch = mockFetch(200, goodBitcoinRequest)
-	const value = await money.fetchIt('Qualquer coisa')
-	expect(value).toEqual(goodBitcoinRequest)
+	const value = await money.fetchIt('Qualquer coisa', mockedPromise(goodBitcoinRequest))
+	expect(value).toEqual(goodBitcoinRequest.data)
 })
 
 it('Get fetch response to be not ok', async () => {
-	global.fetch = mockFetch(400, goodBitcoinRequest)
-
 	try {
-		await money.fetchIt('Qualquer coisa')
+		await money.fetchIt('Qualquer coisa', mockedPromise(badBitcoinRequest))
 	} catch(err) {
-		expect(err).toEqual(new Error ({
+		expect(err).toEqual({
 			name: 'Nada bem',
 			message: 'Houve um erro ao buscar as correções das moedas'
-		}))
+		})
 	}
-	
 })
 
 it('Get brita currency', async () => {
-	global.fetch = mockFetch(200, goodBritaRequest)
-	const value = await money.getCurrencyValue('brita')
-
+	const value = await money.getCurrencyValue(
+		'brita',
+		mockedPromise(goodBritaRequest.data)
+	)
 	expect(value).toEqual({
-	'buy': 2,
-	'sell': 3
+		buy: 2,
+		sell: 3
 	})
 })
+
 
 it('Get bitcoin currency', async () => {
-	global.fetch = mockFetch(200, goodBitcoinRequest)
-	const value = await money.getCurrencyValue('bitcoin')
-
+	const value = await money.getCurrencyValue(
+		'bitcoin',
+		mockedPromise(goodBitcoinRequest.data)
+	)
 	expect(value).toEqual({
-	'buy': 2,
-	'sell': 3
+		buy: 2,
+		sell: 3
 	})
 })
+
 
 it('Get real currency', async () => {
-	expect(await money.getCurrencyValue('real')).toEqual({
-	'buy': 1,
-	'sell': 1
+	const value = await money.getCurrencyValue(
+		'real',
+		mockedPromise({})
+	)
+	expect(value).toEqual({
+		buy: 1,
+		sell: 1
 	})
 })
 
-it('Get others currency', async () => {
+it('Get others currencies', async () => {
 	try {
-		await money.getCurrencyValue('golpinhos')
+		await money.getCurrencyValue('golpinhos', mockedPromise({}))
 	} catch(err) {
-		expect(err).toEqual(new Error ({
+		expect(err).toEqual({
 			name: "Isso no ecxiste!",
 			message: "Essa moeda não é suportada"
-		}))
+		})
 	}
 })
 
-it ('Get amount changed', async () => {
-	global.fetch = mockFetch(200, goodBritaRequest)
-	expect(await money.changeMyMoneyService('brita', 'brita', 1)).toEqual(6)
+it ('Get changed money', async () => {
+	const changedAmount = await money.changeMyMoneyService(
+		'real',
+		'brita',
+		1,
+		mockedPromise({buy: 1, sell: 1})
+	)
+	expect(changedAmount).toEqual(1)
+})
+
+it ('Get same money changed error', async () => {
+	try {
+		await money.changeMyMoneyService(
+			'real',
+			'real',
+			1,
+			mockedPromise({buy: 1, sell: 1})
+		)
+	} catch(err) {
+		expect(err).toEqual({
+			name: "Mesma moeda!",
+			message: "Não é possível trocar para a mesma moeda"
+		})		
+	}
+})
+
+it ('Get change nothing error', async () => {
+	try {
+		await money.changeMyMoneyService(
+			'real',
+			'bitcoin',
+			0,
+			mockedPromise({buy: 1, sell: 1})
+		)
+	} catch(err) {
+		expect(err).toEqual({
+			name: "Mão de vaca",
+			message: "Não é possível trocar 0 dinheiros"
+		})		
+	}
 })

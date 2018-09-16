@@ -108,10 +108,10 @@ it ('Get changed money', async () => {
 	const changedAmount = await money.changeMyMoneyService(
 		'real',
 		'brita',
-		1,
-		mockedPromise({buy: 1, sell: 1})
+		100,
+		mockedPromise({buy: 4, sell: 2})
 	)
-	expect(changedAmount).toEqual(1)
+	expect(changedAmount).toEqual(50)
 })
 
 it ('Get same money changed error', async () => {

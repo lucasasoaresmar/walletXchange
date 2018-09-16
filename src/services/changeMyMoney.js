@@ -100,7 +100,7 @@ export const changeMyMoneyService = async (
 		const fromThisCurrencyValue = await getCurrencyValueFunc(fromThisCurrency)
 		const toThisCurrencyValue = await getCurrencyValueFunc(toThisCurrency)
 		
-		return fromThisCurrencyValue.sell * amount * toThisCurrencyValue.buy
+		return fromThisCurrencyValue.sell * amount / toThisCurrencyValue.buy
 	} catch(err) {
 		throw err
 	}

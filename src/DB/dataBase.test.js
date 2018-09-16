@@ -20,7 +20,6 @@ const newExchange = {
 	from: 'real',
 	to: 'bitcoin',
 	amount: 300.98,
-	conversion: 0.16
 }
 
 beforeEach(() => {
@@ -89,11 +88,11 @@ it('Find non existent user exchanges', () => {
 })
 
 it('Add exchanges to non existent user', () => {
-	expect(newDB.addExchange({ ...newExchange, userId: 2 }))
+	expect(newDB.addExchange(900, { ...newExchange, userId: 2 } ))
 	.toEqual({status: 404, data: 'Usuário não encontrado'})
 })
 
 it('Add exchanges', () => {
-	expect(newDB.addExchange(newExchange))
-	.toEqual({ status: 201, data: {...newExchange, id: ++mockedStorage.exchangesId.length } })
+	expect(newDB.addExchange(200, newExchange))
+	.toEqual({ status: 201, data: [{...newExchange, id: ++mockedStorage.exchangesId.length }] })
 })

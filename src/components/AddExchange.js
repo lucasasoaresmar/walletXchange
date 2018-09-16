@@ -28,7 +28,7 @@ class AddExchange extends Component {
     this.state = {
       fromCurrency: "real",
       toCurrency: "brita",
-      amount: 0
+      amount: ''
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleExchange = this.handleExchange.bind(this)

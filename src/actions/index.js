@@ -90,7 +90,9 @@ export const makeExchange = exchange => async (dispatch, getState) => {
 			[exchange.to]: toThisMoney + exchanged
 		}
 
-		const newExchange = DB.addExchange(newMoney, exchange)
+		const exchangeWithExchanged = {...exchange, exchanged: exchanged}
+
+		const newExchange = DB.addExchange(newMoney, exchangeWithExchanged)
 		dispatch(receiveMyMoney(newMoney))
 		dispatch(receiveExchanges(newExchange.data))
 

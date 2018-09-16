@@ -72,7 +72,8 @@ export const DB = {
 				date: exchange.date,
 				from: exchange.from,
 				to: exchange.to,
-				amount: exchange.amount
+				amount: exchange.amount,
+				exchanged: exchange.exchanged
 			}
 		}
 

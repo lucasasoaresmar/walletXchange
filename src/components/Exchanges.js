@@ -63,7 +63,7 @@ const Exchanges = ({exchanges, classes}) => (
             <ListItemText
               primary={
                 <span>
-                  {getCurrencies(exchange.from)[0]} {exchange.amount.toFixed(2)} em {getCurrencies(exchange.to)[1]}
+                  {getCurrencies(exchange.from)[0]}{exchange.amount.toFixed(2)} para {getCurrencies(exchange.to)[0]}{exchange.exchanged.toFixed(2)}
                 </span>
               }
               secondary={<span>{exchange.date}</span>}

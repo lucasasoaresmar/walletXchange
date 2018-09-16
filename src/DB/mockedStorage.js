@@ -19,7 +19,7 @@ export const mockedStorage = {
 			from: 'brita',
 			to: 'real',
 			amount: 200.22,
-			conversion: 13
+			exchanged: 13
 		},
 		2: {
 			id: 2,
@@ -28,7 +28,7 @@ export const mockedStorage = {
 			from: 'real',
 			to: 'bitcoin',
 			amount: 300.98,
-			conversion: 0.16
+			exchanged: 0.16
 		}
 	},
 	exchangesId: [1,2]

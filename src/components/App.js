@@ -6,7 +6,6 @@ import {
 } from "react-router-dom"
 import Login from '../containers/Login.container'
 import Home from './Home'
-import Exchanges from '../containers/Exchanges.container'
 import PrivateRoute from '../containers/PrivateRoute.container'
 
 class App extends Component {
@@ -17,7 +16,6 @@ class App extends Component {
           <Switch>
             <Route exact path="/" component={Login}/>
             <PrivateRoute path="/home" component={Home}/>
-            <PrivateRoute path="/exchanges" component={Exchanges}/>
             <Route render={ () => <h1>404 Error</h1> } />
           </Switch>
         </div>

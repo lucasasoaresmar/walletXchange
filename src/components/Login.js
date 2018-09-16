@@ -9,6 +9,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle'
 import Visibility from '@material-ui/icons/Visibility'
 import Button from '@material-ui/core/Button'
 import Chip from '@material-ui/core/Chip'
+import Typography from '@material-ui/core/Typography'
 import { withStyles } from '@material-ui/core/styles'
 import withRoot from '../withRoot'
 
@@ -52,9 +53,17 @@ class Login extends Component {
     })
   }
 
+  eraseState() {
+    this.setState({
+      name: '',
+      password: ''
+    })
+  }
+
   handleLogin(e) {
     const { name, password } = this.state
     this.props.login({name, password})
+    this.eraseState()
     e.preventDefault()
   }
 
@@ -62,6 +71,7 @@ class Login extends Component {
     const { name, password } = this.state
     this.props.signup({name, password})
     this.props.login({name, password})
+    this.eraseState()
     e.preventDefault()
   }
 
@@ -88,6 +98,7 @@ class Login extends Component {
             <Input 
               id="name"
               name="name"
+              value={this.state.name}
               onChange={this.handleChange} 
               startAdornment={
                 <InputAdornment position="start">
@@ -103,6 +114,7 @@ class Login extends Component {
               id="password"
               name="password"
               type="password"
+              value={this.state.password}
               onChange={this.handleChange}
               startAdornment={
                 <InputAdornment position="start">
@@ -126,6 +138,14 @@ class Login extends Component {
           >
             Signup
           </Button>
+          
+          <FormControl className={classes.formControl}> 
+            <Typography variant="caption" color="secondary" gutterBottom align="center">
+              * Preencha os campos e aperte Signup para se cadastrar
+            </Typography>
+          </FormControl>
+
+          <FormControl className={classes.formControl}> 
             { failure 
               ? <Chip 
                   label={ failure }
@@ -133,7 +153,8 @@ class Login extends Component {
                   color="primary"
                 />
               : null
-            }
+            }       
+          </FormControl>
         </FormControl>
       </div>
     )

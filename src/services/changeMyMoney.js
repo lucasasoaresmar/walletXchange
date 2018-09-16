@@ -1,62 +1,67 @@
 import moment from 'moment'
 import axios from 'axios'
+import { newError } from '../utils/error'
 
-export const todayFormatMMDDYYYY = () => moment(new Date()).format('MM-DD-YYYY')
+export const interval = (days = 3, today = moment()) => ({
+	finalDate: today.format('MM-DD-YYYY'),
+	initialDate: today.subtract(days, 'days').format('MM-DD-YYYY')
+})
 
-export const lastBritaValueURL = () => {
-	//const today = todayFormatMMDDYYYY()
+export const getBrita = (date = interval()) => ({
+	method: 'get',
+	url: process.env.REACT_APP_BRITA_URL,
+	params: {
+		'@moeda': "'USD'",
+		'@dataInicial': `'${date.initialDate}'`,
+		'@dataFinalCotacao': `'${date.finalDate}'`,
+		'$format':'json',
+		'$select': 'cotacaoCompra,cotacaoVenda,dataHoraCotacao'
+	}
+})
 
-	/*return process.env.REACT_APP_BRITA_URL_BEGIN
-	+ today
-	+ process.env.REACT_APP_BRITA_URL_FINISH*/
-	return "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaDia(moeda=@moeda,dataCotacao=@dataCotacao)?@moeda=%27USD%27&@dataCotacao=%2709-06-2018%27&$top=1&$orderby=dataHoraCotacao%20desc&$format=json&$select=cotacaoCompra,cotacaoVenda,dataHoraCotacao"
+const getBitcoin = {
+	method: 'get',
+	url: process.env.REACT_APP_BITCOIN_URL
 }
 
-const lastBitcoinValueUrl = process.env.REACT_APP_BITCOIN_URL
-
-export const fetchIt = async (url) => {
+export const fetchIt = async (request, fetchFunc = axios) => {
 	try {
-		const res = await axios.get(url)
+		const res = await fetchFunc(request)
 
 		if (res.status === 200) return res.data
-		else {
-			throw new Error ({
-				name: 'Nada bem',
-				message: 'Houve um erro ao buscar as correções das moedas'
-			})
-		}
+		else throw newError()
 	} catch (err) {
-		throw new Error ({
+		throw newError({
 			name: 'Nada bem',
 			message: 'Houve um erro ao buscar as correções das moedas'
 		})
 	}
 }
 
-export const getCurrencyValue = async (currency) => {
+export const getCurrencyValue = async (currency, fetchFunc = fetchIt) => {
 	if (currency === 'brita') {
 		try {
-			const lastBritaTodayURL = lastBritaValueURL()
-			const res = await fetchIt(lastBritaTodayURL)
+			const res = await fetchFunc(getBrita())
+			const data = res.value[res.value.length - 1]
+
 			return {
-				buy: Number(res.value[0].cotacaoCompra),
-				sell: Number(res.value[0].cotacaoVenda)
+				buy: Number(data.cotacaoCompra),
+				sell: Number(data.cotacaoVenda)
 			}
 		} catch(err) {
-			throw new Error(err)
+			throw err
 		}
 	}
 
 	if (currency === 'bitcoin') {
 		try {
-			const res = await fetchIt(lastBitcoinValueUrl)
-			console.log(res)
+			const res = await fetchFunc(getBitcoin)
 			return {
 				buy: Number(res.ticker.buy),
 				sell: Number(res.ticker.sell)
 			}
 		} catch(err) {
-			throw new Error(err)
+			throw err
 		}
 	}
 
@@ -68,19 +73,35 @@ export const getCurrencyValue = async (currency) => {
 	}
 
 	else {
-		throw new Error({
+		throw newError({
 			name: "Isso no ecxiste!",
 			message: "Essa moeda não é suportada"
 		})
 	}
 }
 
-export const changeMyMoneyService = async (fromThisCurrency, toThisCurrency, amount) => {
+export const changeMyMoneyService = async (
+	fromThisCurrency,
+	toThisCurrency,
+	amount,
+	getCurrencyValueFunc = getCurrencyValue
+	) => {
 	try {
-		const fromThisCurrencyValue = await getCurrencyValue(fromThisCurrency)
-		const toThisCurrencyValue = await getCurrencyValue(toThisCurrency)
-		return fromThisCurrencyValue.sell * amount * toThisCurrencyValue.buy
+		if (fromThisCurrency === toThisCurrency) throw newError({
+			name: "Mesma moeda!",
+			message: "Não é possível trocar para a mesma moeda"
+		})
+
+		if (amount === 0) throw newError({
+			name: "Mão de vaca",
+			message: "Não é possível trocar 0 dinheiros"
+		})
+
+		const fromThisCurrencyValue = await getCurrencyValueFunc(fromThisCurrency)
+		const toThisCurrencyValue = await getCurrencyValueFunc(toThisCurrency)
+		
+		return fromThisCurrencyValue.sell * amount / toThisCurrencyValue.buy
 	} catch(err) {
-		throw new Error(err)
+		throw err
 	}
 }

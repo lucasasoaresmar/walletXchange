@@ -57,7 +57,7 @@ const MoneyPanel = ({real, brita, bitcoin, classes}) => {
       </Typography>
       {currencies.map(cur =>
         <Typography key={cur.name} className={classes.line} variant="body2" gutterBottom>
-          {cur.currency} {cur.amount.toFixed(2)} 
+          {cur.currency} {cur.name === 'bitcoins' ? cur.amount.toFixed(8) : cur.amount.toFixed(2)} 
           <span className={classes.alignRight}>
             <small>{cur.name}</small>
           </span>
